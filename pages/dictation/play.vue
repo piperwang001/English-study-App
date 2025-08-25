@@ -1,0 +1,206 @@
+<template>
+  <view class="play-container">
+    <view class="top-info">
+      <text class="timer">用时：{{ elapsedDisplay }}</text>
+      <text class="progress">{{ currentIndex + 1 }}/{{ total }}</text>
+    </view>
+
+    <view class="speak-box">
+      <button size="mini" @click="playAudio">🔊 播放</button>
+    </view>
+
+    <view class="input-box">
+      <input
+        class="answer-input"
+        v-model="answer"
+        placeholder="请输入你听到的单词"
+        confirm-type="done"
+      />
+    </view>
+
+    <view class="progress-bar">
+      <view
+        class="progress-fill"
+        :style="{ width: progressPercent + '%' }"
+      ></view>
+    </view>
+
+    <view class="result" v-if="showResult">
+      <text :class="{ ok: lastCorrect, wrong: !lastCorrect }">
+        {{ lastCorrect ? "正确！" : "错误，正确答案：" + currentWord }}
+      </text>
+    </view>
+
+    <view class="bottom">
+      <button type="primary" @click="submit">提交</button>
+    </view>
+  </view>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      words: [],
+      currentIndex: 0,
+      answer: "",
+      showResult: false,
+      lastCorrect: false,
+      startTs: 0,
+      timerId: null,
+      elapsedMs: 0,
+    };
+  },
+  computed: {
+    total() {
+      return this.words.length;
+    },
+    currentWord() {
+      return this.words[this.currentIndex] || "";
+    },
+    progressPercent() {
+      return this.total
+        ? Math.floor((this.currentIndex / this.total) * 100)
+        : 0;
+    },
+    elapsedDisplay() {
+      const s = Math.floor(this.elapsedMs / 1000);
+      const mm = String(Math.floor(s / 60)).padStart(2, "0");
+      const ss = String(s % 60).padStart(2, "0");
+      return `${mm}:${ss}`;
+    },
+  },
+  onLoad() {
+    const list = uni.getStorageSync("DICTATION_WORDS") || [];
+    this.words =
+      Array.isArray(list) && list.length ? list : ["apple", "banana", "orange"];
+    this.startTimer();
+  },
+  onUnload() {
+    this.stopTimer();
+  },
+  methods: {
+    startTimer() {
+      this.startTs = Date.now();
+      this.timerId = setInterval(() => {
+        this.elapsedMs = Date.now() - this.startTs;
+      }, 250);
+    },
+    stopTimer() {
+      if (this.timerId) {
+        clearInterval(this.timerId);
+        this.timerId = null;
+      }
+    },
+    playAudio() {
+      // 简化处理：H5 使用浏览器语音合成，其他平台用 Toast 模拟
+      // #ifdef H5
+      try {
+        const utter = new SpeechSynthesisUtterance(this.currentWord);
+        utter.lang = "en-US";
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.speak(utter);
+      } catch (e) {
+        uni.showToast({ title: "无法播放语音", icon: "none" });
+      }
+      // #endif
+      // #ifndef H5
+      uni.showToast({ title: `播放：${this.currentWord}`, icon: "none" });
+      // #endif
+    },
+    submit() {
+      if (!this.currentWord) return;
+      const normalizedAnswer = String(this.answer || "")
+        .trim()
+        .toLowerCase();
+      const normalizedTarget = String(this.currentWord).trim().toLowerCase();
+      const correct = normalizedAnswer === normalizedTarget;
+      this.lastCorrect = correct;
+      this.showResult = true;
+
+      if (correct) {
+        // 短暂展示后进入下一题
+        setTimeout(() => {
+          this.answer = "";
+          this.showResult = false;
+          if (this.currentIndex < this.total - 1) {
+            this.currentIndex += 1;
+          } else {
+            this.finish();
+          }
+        }, 400);
+      }
+    },
+    finish() {
+      this.stopTimer();
+      uni.showModal({
+        title: "完成",
+        content: `共 ${this.total} 个单词，用时 ${this.elapsedDisplay}`,
+        showCancel: false,
+        success: () => {
+          uni.navigateBack();
+        },
+      });
+    },
+  },
+};
+</script>
+
+<style>
+.play-container {
+  padding: 30rpx;
+  min-height: 100vh;
+  background: #f7f7f7;
+}
+.top-info {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 30rpx;
+  color: #666;
+}
+.speak-box {
+  display: flex;
+  justify-content: center;
+  margin: 30rpx 0;
+}
+.input-box {
+  margin: 20rpx 0 40rpx;
+}
+.answer-input {
+  background: #fff;
+  border-radius: 12rpx;
+  padding: 20rpx;
+  font-size: 30rpx;
+}
+.progress-bar {
+  height: 16rpx;
+  background: #eee;
+  border-radius: 8rpx;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: #007aff;
+  width: 0;
+  transition: width 0.25s ease;
+}
+.result {
+  margin: 24rpx 0;
+  text-align: center;
+}
+.result .ok {
+  color: #07c160;
+}
+.result .wrong {
+  color: #fa5151;
+}
+.bottom {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 20rpx;
+  background: #fff;
+  box-shadow: 0 -6rpx 20rpx rgba(0, 0, 0, 0.06);
+}
+</style>
