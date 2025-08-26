@@ -4,7 +4,7 @@
     <view class="user-info">
       <image class="avatar" src="/static/logo.png"></image>
       <view class="user-details">
-        <text class="username">用户昵称</text>
+        <text class="username" @click="handleLogin">用户昵称</text>
         <text class="user-desc">这个人很懒，什么都没留下</text>
       </view>
     </view>
@@ -50,21 +50,30 @@
   </view>
 </template>
 
-<script>
-export default {
-  data() {
-    return {};
-  },
-  onLoad() {},
-  methods: {
-    handleMenuClick(type) {
-      uni.showToast({
-        title: `点击了${type}`,
-        icon: "none",
-      });
-    },
-  },
-};
+<script setup lang="ts">
+// 本地声明以通过类型检查（运行时由 uni-app 提供）
+declare const uni: any;
+import { post } from "../../utils/request";
+
+async function handleLogin() {
+  try {
+    const res: any = await post("/api/user/login", {}, { showLoading: true });
+    const token: string =
+      (res && (res.token || (res.data && res.data.token))) || "";
+    if (!token) {
+      uni.showToast({ title: "登录失败：未返回token", icon: "none" });
+      return;
+    }
+    uni.setStorageSync("token", token);
+    uni.showToast({ title: "登录成功", icon: "success" });
+  } catch (err) {
+    uni.showToast({ title: "登录失败，请稍后重试", icon: "none" });
+  }
+}
+
+function handleMenuClick(type: string) {
+  uni.showToast({ title: `点击了${type}`, icon: "none" });
+}
 </script>
 
 <style>

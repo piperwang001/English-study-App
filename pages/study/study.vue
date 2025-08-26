@@ -41,21 +41,13 @@
   </view>
 </template>
 
-<script>
-export default {
-  data() {
-    return {};
-  },
-  onLoad() {},
-  methods: {
-    handleCourseClick(course) {
-      uni.showToast({
-        title: `开始学习${course}`,
-        icon: "none",
-      });
-    },
-  },
-};
+<script setup lang="ts">
+// 本地声明以通过类型检查（运行时由 uni-app 提供）
+declare const uni: any;
+
+function handleCourseClick(course: string) {
+  uni.showToast({ title: `开始学习${course}`, icon: "none" });
+}
 </script>
 
 <style>
