@@ -42,32 +42,23 @@
   </view>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      title: "欢迎来到学习平台",
-    };
-  },
-  onLoad() {},
-  methods: {
-    handleFeatureClick(feature) {
-      uni.showToast({
-        title: `点击了${feature}`,
-        icon: "none",
-      });
-    },
-    goDictationUnits() {
-      uni.navigateTo({ url: "/pages/dictation/units" });
-    },
-    handleRecommendClick(item) {
-      uni.showToast({
-        title: `查看${item}`,
-        icon: "none",
-      });
-    },
-  },
-};
+<script setup lang="ts">
+// 本地声明以通过类型检查（运行时由 uni-app 提供）
+declare const uni: any;
+
+const title = "欢迎来到学习平台";
+
+function handleFeatureClick(feature: string) {
+  uni.showToast({ title: `点击了${feature}`, icon: "none" });
+}
+
+function goDictationUnits() {
+  uni.navigateTo({ url: "/pages/dictation/units" });
+}
+
+function handleRecommendClick(item: string) {
+  uni.showToast({ title: `查看${item}`, icon: "none" });
+}
 </script>
 
 <style>
@@ -138,9 +129,6 @@ export default {
   color: #333;
   margin-bottom: 30rpx;
   display: block;
-}
-
-.recommend-list {
 }
 
 .recommend-item {
