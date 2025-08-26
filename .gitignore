@@ -1,0 +1,8 @@
+# Ignore HBuilderX/uni-app build outputs
+unpackage/dist/
+unpackage/dist/**
+
+# Optional: common OS/editor files
+.DS_Store
+.idea/
+.vscode/
