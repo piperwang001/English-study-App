@@ -1,8 +1,34 @@
-# Ignore HBuilderX/uni-app build outputs
-unpackage/dist/
-unpackage/dist/**
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
 
-# Optional: common OS/editor files
-.DS_Store
-.idea/
+# Editor
 .vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# HBuilderX
+unpackage/
+hybrid/html/*
+
+# 编译产物
+dist/
+dist-*/
+*.log
+
+# 微信小程序
+project.private.config.json
+project.config.json.bak
+project.private.*.json
+
+# 临时文件
+*.tmp
+*.temp
+*.bak
+*.local
+*.iml

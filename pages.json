@@ -30,6 +30,18 @@
       "style": {
         "navigationBarTitleText": "我的"
       }
+    },
+    {
+      "path": "pages/common/units",
+      "style": {
+        "navigationBarTitleText": "选择单词"
+      }
+    },
+    {
+      "path": "pages/linking/play",
+      "style": {
+        "navigationBarTitleText": "词语连连看"
+      }
     }
   ],
   "globalStyle": {

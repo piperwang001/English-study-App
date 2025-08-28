@@ -23,20 +23,9 @@
         <text class="feature-icon">🔤</text>
         <text class="feature-text">词语听写</text>
       </view>
-    </view>
-
-    <!-- 推荐内容 -->
-    <view class="recommend-section">
-      <text class="section-title">推荐内容</text>
-      <view class="recommend-list">
-        <view class="recommend-item" @click="handleRecommendClick('vue')">
-          <text class="recommend-title">Vue.js 3.0 新特性</text>
-          <text class="recommend-desc">了解Vue 3.0的最新功能和改进</text>
-        </view>
-        <view class="recommend-item" @click="handleRecommendClick('uni')">
-          <text class="recommend-title">uni-app 跨平台开发</text>
-          <text class="recommend-desc">一套代码，多端运行</text>
-        </view>
+      <view class="feature-item" @click="goLinkingUnits">
+        <text class="feature-icon">🔗</text>
+        <text class="feature-text">词语连连看</text>
       </view>
     </view>
   </view>
@@ -54,6 +43,10 @@ function handleFeatureClick(feature: string) {
 
 function goDictationUnits() {
   uni.navigateTo({ url: "/pages/dictation/units" });
+}
+
+function goLinkingUnits() {
+  uni.navigateTo({ url: "/pages/common/units?mode=linking" });
 }
 
 function handleRecommendClick(item: string) {
